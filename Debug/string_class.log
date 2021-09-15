@@ -1,0 +1,7 @@
+﻿  MyStrting.cpp
+  test.cpp
+  Создание кода...
+c:\users\eshus\source\repos\string_class\mystrting.cpp(54): warning C4172: возвращение адреса локальной или временной переменной : _temp
+c:\users\eshus\source\repos\string_class\mystrting.cpp(67): warning C4172: возвращение адреса локальной или временной переменной : _temp
+c:\users\eshus\source\repos\string_class\mystrting.cpp(81): warning C4172: возвращение адреса локальной или временной переменной : _temp
+  string_class.vcxproj -> C:\Users\eshus\source\repos\string_class\Debug\string_class.exe

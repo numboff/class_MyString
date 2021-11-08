@@ -1,7 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "MyString.h"
 #include <iostream>
-#include <cstring>
 
 MyString::MyString()
 {
@@ -36,49 +35,38 @@ MyString::MyString(int leng2, char a5) : leng(leng2), string(new char[leng + 1])
 	string[leng] = '\0';
 }
 
-MyString::MyString(MyString &a6) : leng(a6.leng), string(a6.string)
+MyString::MyString(const MyString &a6) : leng(a6.leng), string(a6.string)
 {
 
 }
 
 MyString& MyString::operator+ (const MyString& t1)
 {
-	MyString _temp;                         // временный объект
-	delete[] _temp.string;                   // стираем строку, выделенную в конструкторе по умолчанию
-	_temp.leng = t1.leng + leng;        // вычисляем длину будущей строки
-	_temp.string = new char[_temp.leng + 1];  // выделяем место под новую строку + нулевой символ
-	std::strcpy(_temp.string, string);
-	std::strcpy(_temp.string + leng, t1.string); // собственно, сцепляем и сохраняем в новый объект
-	_temp[leng] = '\0';
-
-	return _temp;
+	return this->operator+(t1.string);
 }
 
 MyString& MyString::operator+ (char* t1)
 {
-	MyString _temp;                         // временный объект
-	delete[] _temp.string;                   // стираем строку, выделенную в конструкторе по умолчанию
-	_temp.leng = leng + strlen(t1);        // вычисляем длину будущей строки
-	_temp.string = new char[_temp.leng + 1];  // выделяем место под новую строку + нулевой символ
-	std::strcpy(_temp.string, string);
-	std::strcpy(_temp.string + leng, t1); // собственно, сцепляем и сохраняем в новый объект
-	_temp[leng] = '\0';
+	if (t1 == NULL) return *this;
+	if (string == NULL)
+	{
+		leng = strlen(t1);
+		string = new char[leng + 1];
+		strcpy(string, t1);
+	}
+	else
+	{
+		leng += strlen(t1);
+		string = (char*)realloc(string, (leng + 1) * sizeof(char));
+		strcat(string, t1);
+	}
 
-	return _temp;
+	return *this;
 }
 
 MyString& MyString::operator+ (std::string t)
 {
-	MyString _temp;                         // временный объект
-	delete[] _temp.string;                   // стираем строку, выделенную в конструкторе по умолчанию
-	_temp.leng = leng + t.size();        // вычисляем длину будущей строки
-	_temp.string = new char[_temp.leng + 1];  // выделяем место под новую строку + нулевой символ
-
-	std::strcpy(_temp.string, string);
-	std::strcpy(_temp.string + leng, t.c_str()); // собственно, сцепляем и сохраняем в новый объект
-	_temp[leng] = '\0';
-
-	return _temp;
+	return this->operator+((char*)t.c_str());
 }
 
 MyString& MyString::operator += (std::string t)
@@ -147,7 +135,7 @@ int MyString::size()
 	
 int MyString::length()
 {
-	return size();
+	return size();  
 }
 
 int MyString::empty()
@@ -163,6 +151,12 @@ int MyString::capacity()
 	return sizeof(string);
 }
 
+void MyString::shrink_to_fit() {
+	leng = strlen(string);
+	string = (char*)realloc(string, (leng + 1) * sizeof(char));
+	string[leng] = '\0';
+}
+
 void MyString::clear()
 {
 	delete[] string;
@@ -170,7 +164,7 @@ void MyString::clear()
 	string = 0;
 }
 
-void MyString::insert(int index, int count, char t)
+MyString& MyString::insert(int index, int count, char t)
 {
 	leng += count;
 	char* tmp_str = new char[leng + 1];
@@ -178,14 +172,207 @@ void MyString::insert(int index, int count, char t)
 	{
 		tmp_str[i] = string[i];
 	}
-	for (int i = 0; i < index + count; ++i)
+	for (int i = index; i < index + count; ++i)
 	{
 		tmp_str[i] = t;
 	}
-	for (int i = 0; i < leng; ++i)
+	for (int i = index + count; i < leng; ++i)
 	{
 		tmp_str[i] = string[i-count];
 	}
+	
+	if (string)
+		string = (char*)realloc(string, sizeof(char) * (leng+1));
+	else string = new char[leng+1];
+	string = tmp_str;
+	string[leng] = '\0';
+
+	return *this;
+}
+
+MyString& MyString::insert(int index, std::string t1)
+{
+	leng +=t1.length();
+	char* tmp_str = new char[leng + 1];
+	for (int i = 0; i < index; ++i)
+	{
+		tmp_str[i] = string[i];
+	}
+	for (int i = index; i < index + (int)(t1.length()); ++i)
+	{
+		tmp_str[i] = t1[i - index];
+	}
+	for (int i = index + t1.length(); i < leng; ++i)
+	{
+		tmp_str[i] = string[i - t1.length()];
+	}
+
+	if (string)
+		string = (char*)realloc(string, sizeof(char) * (leng + 1));
+	else string = new char[leng + 1];
+	string = tmp_str;
+	string[leng] = '\0';
+
+	return *this;
+}
+
+MyString& MyString::insert(int index, std::string t2, int count)
+{
+	for (int i = 0; i < count; i++)
+	{
+		insert(index+i, 1, t2[i]);
+	}
+	return *this;
+}
+
+MyString& MyString::erase(int index, int count)
+{
+	char* tmp = new char[leng + 1];
+	strcpy(tmp, string);
+
+	//
+	string = (char*)realloc(string, (leng - count + 1) * sizeof(char));
+	for (int i = index + count; i < leng; i++)
+	{
+		string[i - count] = tmp[i];
+	}
+	leng = leng - count;
+	string[leng] = '\0';
+
+	return *this;
+}
+
+MyString& MyString::append(int count, char t)
+{
+	int index = leng;
+	for (int i = 0; i < count; i++)
+	{
+		insert(index + i, 1, t);
+	}
+
+	return *this;
+}
+
+MyString& MyString::append(char* t1)
+{
+
+	int length = strlen(t1);
+	for (int i = 0; i < length; i++)
+	{
+		append(1, t1[i]);
+	}
+
+	return *this;
+}
+
+MyString& MyString::append(char* t1, int index, int count)
+{
+
+	char* tmp = new char[count + 1];
+	for (int i = index; i < int(index + count); i++)
+	{
+		tmp[i - index] = t1[i];
+	}
+	tmp[count] = '\0';
+	append(tmp);
+
+	return *this;
+}
+
+MyString& MyString::append (std::string t2)
+{
+	append((char*)t2.c_str());
+
+	return *this;
+}
+
+MyString& MyString::append(std::string t1, int index, int count)
+{
+
+	t1 = t1.substr(index, count);
+	append(t1);
+
+	return *this;
+}
+
+MyString& MyString::replace(int index, int count, char* t2)
+{
+	erase(index, count);
+	insert(index, t2);
+
+	return *this;
+}
+
+MyString& MyString::replace(int index, int count, std::string t2)
+{
+	replace(index, count, (char*)t2.c_str());
+
+	return *this;
+}
+
+char* MyString::substr(int index)
+{
+	MyString tmp(string);
+	tmp.erase(0, index);
+
+	return tmp.c_str();
+}
+
+char* MyString::substr(int index, int count)
+{
+	MyString tmp(string);
+	tmp.erase(0, index);
+	tmp.erase(index + count, tmp.leng);
+
+	return tmp.c_str();
+}
+
+bool MyString::equals(const char* t)
+{
+	for (int i = 0; i < leng; i++)
+	{
+		if (string[i] != t[i])
+			return false;
+	}
+	return true;
+}
+
+long long int MyString::find(const char* t)
+{
+	int find_string_size = strlen(t);
+
+	for (int i = 0; i < leng - find_string_size + 1; i++)
+	{
+		MyString tmp(this->substr(i, find_string_size));
+		if (tmp.equals(t))
+			return i;
+	}
+	return -1;
+}
+
+long long int MyString::find(const char* t, int index)
+{
+	int find_string_size = strlen(t);
+
+	if (index > leng - find_string_size) return -1;
+
+	for (int i = index; i < leng - find_string_size; i++)
+	{
+		MyString tmp(this->substr(i, find_string_size));
+		if (tmp.equals(t))
+			return i;
+	}
+	return -1;
+}
+
+long long int MyString::find(std::string t2)
+{
+	return find((char*)t2.c_str());
+}
+
+long long int MyString::find(std::string t2, int index)
+{
+	return find((char*)t2.c_str(), index);
 }
 
 MyString::~MyString()
@@ -215,7 +402,7 @@ void MyString::AssignFunc(int t_leng, char* t)
 	string[leng] = '\0';
 }
 
-std::ostream& operator<< (std::ostream &out, const MyString& t)
+std::ostream& operator<<(std::ostream &out, const MyString& t)
 {
 	out << t.string;
 	return out;

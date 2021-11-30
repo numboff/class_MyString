@@ -1,109 +1,135 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include "MyString.h"
-#include <iostream>
 
-MyString::MyString()
+MyString::MyString() : leng(0), capa(0), string(nullptr)
 {
-	string = 0;
-	leng = 0;
+
 }
 
-MyString::MyString(char* a1) : leng(strlen(a1)), string(new char[leng+1])
+MyString::MyString(const char* char_element) : MyString(char_element, strlen(char_element))
 {
-	strcpy(string, a1);
+
+}
+
+MyString::MyString(const std::string string_element) : leng(string_element.size()), capa(leng+1), string(new char[leng + 1])
+{
+	strcpy(string, string_element.c_str());
 	string[leng] = '\0';
 }
 
-MyString::MyString(std::string a3) : leng(a3.size()), string(new char[leng + 1])
+MyString::MyString(const char* char_element, const int count) : leng(count), capa(leng+1), string(new char[leng + 1])
 {
-	strcpy(string, a3.c_str());
+	strcpy(string, char_element);
 	string[leng] = '\0';
 }
 
-MyString::MyString(const char* a4, int leng1) : leng(leng1), string(new char[leng + 1])
-{
-	strcpy(string, a4);
-	string[leng] = '\0';
-}
-
-MyString::MyString(int leng2, char a5) : leng(leng2), string(new char[leng + 1])
+MyString::MyString(const int count, const char char_element) : leng(count), capa(leng+1), string(new char[leng + 1])
 {
 	for (int i = 0; i < leng; ++i)
 	{
-		string[i] = a5;
+		string[i] = char_element;
 	}
 	string[leng] = '\0';
 }
 
-MyString::MyString(const MyString &a6) : leng(a6.leng), string(a6.string)
+MyString::MyString(const MyString &mystring_element) : leng(mystring_element.leng), capa(leng+1), string(mystring_element.string)
 {
 
 }
 
-MyString& MyString::operator+ (const MyString& t1)
+MyString::~MyString()
 {
-	return this->operator+(t1.string);
+	delete[] string;
 }
 
-MyString& MyString::operator+ (char* t1)
+MyString MyString::operator+ (const MyString& mystring_elem) const//
 {
-	if (t1 == NULL) return *this;
-	if (string == NULL)
+	MyString tmp;
+	tmp.leng = this->leng + mystring_elem.leng;
+	tmp.capa = tmp.leng + 1;
+	tmp.string = new char[tmp.capa];
+	strcpy(tmp.string, this->string);
+	for (int i = 0; i < tmp.leng; i++)
+		tmp.string[this->leng + i] = mystring_elem.string[i];
+	tmp.string[tmp.leng] = '\0';
+	return tmp;
+}
+
+MyString MyString::operator+ (const char* char_elem) const//
+{
+	MyString tmp(char_elem);
+	return operator+(tmp);
+} // переписать
+
+MyString MyString::operator+ (const std::string string_elem) const//
+{
+	MyString tmp(string_elem);
+	return operator+(tmp);
+}
+
+MyString& MyString::operator += (const std::string string_elem)
+{
+	MyString tmp(string_elem);
+	return operator+=(tmp);
+}
+
+MyString& MyString::operator += (const MyString& mystring_elem)
+{
+	append(mystring_elem.string);
+	return *this;
+}
+
+MyString& MyString::operator += (const char* char_elem)
+{
+	MyString tmp(char_elem);
+	return operator+=(tmp);
+}
+
+MyString& MyString::operator = (const MyString& mystring_elem)
+{
+	if (mystring_elem.leng >= capa)
 	{
-		leng = strlen(t1);
+		leng = mystring_elem.leng;
+		capa = mystring_elem.capa;
+		delete[] string;
 		string = new char[leng + 1];
-		strcpy(string, t1);
+		strcpy(string, mystring_elem.string);
+		string[leng] = '\0';
 	}
 	else
 	{
-		leng += strlen(t1);
-		string = (char*)realloc(string, (leng + 1) * sizeof(char));
-		strcat(string, t1);
+		leng = mystring_elem.leng;
+		strcpy(string, mystring_elem.string);
 	}
+	return *this;
+}
+
+
+MyString& MyString::operator = (const char* char_elem)
+{
+	MyString tmp(char_elem);
+	return operator=(tmp);
+}
+
+MyString& MyString::operator = (const char char_elem)
+{
+	if (capa < 2)
+	{
+		if (string != nullptr)
+			delete[] string;
+		capa = 2;
+		string = new char[capa];
+	}
+	leng = 1;
+	string[0] = char_elem;
+	string[1] = '\0';
 
 	return *this;
 }
 
-MyString& MyString::operator+ (std::string t)
+MyString& MyString::operator = (std::string string_elem)
 {
-	return this->operator+((char*)t.c_str());
-}
-
-MyString& MyString::operator += (std::string t)
-{
-	AddFunc(leng, t.size(), string, (char*)t.c_str());
-	return *this;
-}
-
-MyString& MyString::operator += (const MyString& t)
-{
-	AddFunc(leng, t.leng, string, t.string);
-	return *this;
-}
-
-MyString& MyString::operator += (char* t)
-{
-	AddFunc(leng, strlen(t), string, t);
-	return *this;
-}
-
-//MyString& MyString::operator = (const MyString& t)
-//{
-//	AssignFunc(t.leng, t.string);
-//	return *this;
-//}
-
-
-MyString& MyString::operator = (char* t)
-{
-	AssignFunc(strlen(t), t);
-	return *this;
-}
-
-MyString& MyString::operator = (std::string t)
-{
-	AssignFunc(t.size(), (char*)t.c_str());
-	return *this;
+	MyString tmp(string_elem);
+	return operator=(tmp);
 }
 
 char& MyString::operator[](int i)
@@ -111,50 +137,48 @@ char& MyString::operator[](int i)
 	return string[i];
 }
 
-char* MyString::c_str()
+char* MyString::c_str() const
 {
 	return string;
 }
 
-char* MyString::data()
+char* MyString::data() const
 {
-	if (this->string)
-	{
-		return this->string;
-	}
-	else
-	{
-		return NULL;
-	}
+	return this->c_str();
 }
 
-int MyString::size()
+int MyString::size() const
 {
 	return leng;
 }
 	
-int MyString::length()
+int MyString::length() const
 {
 	return size();  
 }
 
-int MyString::empty()
+bool MyString::empty() const
 {
-	if (leng == 0)
-		return 1;
-	else
-		return 0;
+	return (leng == 0 ? true : false);
 }
 
-int MyString::capacity()
+int MyString::capacity() const
 {
 	return sizeof(string);
 }
 
-void MyString::shrink_to_fit() {
-	leng = strlen(string);
-	string = (char*)realloc(string, (leng + 1) * sizeof(char));
-	string[leng] = '\0';
+void MyString::shrink_to_fit()
+{
+	if (leng + 1 != capa)
+	{
+		char* buffer = new char[this->capa];
+		strcpy(buffer, string);
+		delete[] string;
+		capa = leng + 1;	//buffer
+		string = new char[capa];
+		strcpy(string, buffer);
+		delete[] buffer;
+	}
 }
 
 void MyString::clear()
@@ -164,63 +188,54 @@ void MyString::clear()
 	string = 0;
 }
 
-MyString& MyString::insert(int index, int count, char t)
+MyString& MyString::insert(int index, char char_elem)
 {
-	leng += count;
+	if (capa < leng + 2)
+	{
+		delete[] string;
+		string = new char[capa + 1];
+		capa += 1;
+	}
+	leng += 1;
 	char* tmp_str = new char[leng + 1];
 	for (int i = 0; i < index; ++i)
 	{
 		tmp_str[i] = string[i];
 	}
-	for (int i = index; i < index + count; ++i)
+	tmp_str[index] = char_elem;
+	for (int i = index + 1; i < leng; ++i)
 	{
-		tmp_str[i] = t;
+		tmp_str[i] = string[i - 1];
 	}
-	for (int i = index + count; i < leng; ++i)
-	{
-		tmp_str[i] = string[i-count];
-	}
-	
-	if (string)
-		string = (char*)realloc(string, sizeof(char) * (leng+1));
-	else string = new char[leng+1];
-	string = tmp_str;
-	string[leng] = '\0';
-
+	strcpy(string, tmp_str);
 	return *this;
 }
 
-MyString& MyString::insert(int index, std::string t1)
-{
-	leng +=t1.length();
-	char* tmp_str = new char[leng + 1];
-	for (int i = 0; i < index; ++i)
-	{
-		tmp_str[i] = string[i];
-	}
-	for (int i = index; i < index + (int)(t1.length()); ++i)
-	{
-		tmp_str[i] = t1[i - index];
-	}
-	for (int i = index + t1.length(); i < leng; ++i)
-	{
-		tmp_str[i] = string[i - t1.length()];
-	}
-
-	if (string)
-		string = (char*)realloc(string, sizeof(char) * (leng + 1));
-	else string = new char[leng + 1];
-	string = tmp_str;
-	string[leng] = '\0';
-
-	return *this;
-}
-
-MyString& MyString::insert(int index, std::string t2, int count)
+MyString& MyString::insert(int index, int count, char char_elem)
 {
 	for (int i = 0; i < count; i++)
 	{
-		insert(index+i, 1, t2[i]);
+		insert(index, char_elem);
+	}
+
+	return *this;
+}
+
+MyString& MyString::insert(int index, std::string string_elem)
+{
+	for (int i = 0; i < string_elem.size(); i++)
+	{
+		insert(index, string_elem[i]);
+	}
+
+	return *this;
+}
+
+MyString& MyString::insert(int index, std::string string_elem, int count)
+{
+	for (int i = 0; i < count; i++)
+	{
+		insert(index, string_elem[i]);
 	}
 	return *this;
 }
@@ -242,36 +257,36 @@ MyString& MyString::erase(int index, int count)
 	return *this;
 }
 
-MyString& MyString::append(int count, char t)
+MyString& MyString::append(int count, char char_elem)
 {
 	int index = leng;
 	for (int i = 0; i < count; i++)
 	{
-		insert(index + i, 1, t);
+		insert(index + i, 1, char_elem);
 	}
 
 	return *this;
 }
 
-MyString& MyString::append(char* t1)
+MyString& MyString::append(char* char_elem)
 {
 
-	int length = strlen(t1);
+	int length = strlen(char_elem);
 	for (int i = 0; i < length; i++)
 	{
-		append(1, t1[i]);
+		append(1, char_elem[i]);
 	}
 
 	return *this;
 }
 
-MyString& MyString::append(char* t1, int index, int count)
+MyString& MyString::append(char* char_elem, int index, int count)
 {
 
 	char* tmp = new char[count + 1];
 	for (int i = index; i < int(index + count); i++)
 	{
-		tmp[i - index] = t1[i];
+		tmp[i - index] = char_elem[i];
 	}
 	tmp[count] = '\0';
 	append(tmp);
@@ -279,38 +294,38 @@ MyString& MyString::append(char* t1, int index, int count)
 	return *this;
 }
 
-MyString& MyString::append (std::string t2)
+MyString& MyString::append (std::string string_elem)
 {
-	append((char*)t2.c_str());
+	append((char*)string_elem.c_str());
 
 	return *this;
 }
 
-MyString& MyString::append(std::string t1, int index, int count)
+MyString& MyString::append(std::string string_elem, int index, int count)
 {
 
-	t1 = t1.substr(index, count);
-	append(t1);
+	string_elem = string_elem.substr(index, count);
+	append(string_elem);
 
 	return *this;
 }
 
-MyString& MyString::replace(int index, int count, char* t2)
+MyString& MyString::replace(int index, int count, char* char_elem)
 {
 	erase(index, count);
-	insert(index, t2);
+	insert(index, char_elem);
 
 	return *this;
 }
 
-MyString& MyString::replace(int index, int count, std::string t2)
+MyString& MyString::replace(int index, int count, std::string string_elem)
 {
-	replace(index, count, (char*)t2.c_str());
+	replace(index, count, (char*)string_elem.c_str());
 
 	return *this;
 }
 
-char* MyString::substr(int index)
+char* MyString::substr(int index) const
 {
 	MyString tmp(string);
 	tmp.erase(0, index);
@@ -318,7 +333,7 @@ char* MyString::substr(int index)
 	return tmp.c_str();
 }
 
-char* MyString::substr(int index, int count)
+char* MyString::substr(int index, int count) const
 {
 	MyString tmp(string);
 	tmp.erase(0, index);
@@ -327,62 +342,55 @@ char* MyString::substr(int index, int count)
 	return tmp.c_str();
 }
 
-bool MyString::equals(const char* t)
+bool MyString::equals(const char* char_elem)
 {
 	for (int i = 0; i < leng; i++)
 	{
-		if (string[i] != t[i])
+		if (string[i] != char_elem[i])
 			return false;
 	}
 	return true;
 }
 
-long long int MyString::find(const char* t)
+long long int MyString::find(const char* char_elem) const
 {
-	int find_string_size = strlen(t);
+	int find_string_size = strlen(char_elem);
 
 	for (int i = 0; i < leng - find_string_size + 1; i++)
 	{
 		MyString tmp(this->substr(i, find_string_size));
-		if (tmp.equals(t))
+		if (tmp.equals(char_elem))
 			return i;
 	}
 	return -1;
 }
 
-long long int MyString::find(const char* t, int index)
+long long int MyString::find(const char* char_elem, int index) const
 {
-	int find_string_size = strlen(t);
+	int find_string_size = strlen(char_elem);
 
 	if (index > leng - find_string_size) return -1;
 
 	for (int i = index; i < leng - find_string_size; i++)
 	{
 		MyString tmp(this->substr(i, find_string_size));
-		if (tmp.equals(t))
+		if (tmp.equals(char_elem))
 			return i;
 	}
 	return -1;
 }
 
-long long int MyString::find(std::string t2)
+long long int MyString::find(std::string string_elem) const
 {
-	return find((char*)t2.c_str());
+	return find((char*)string_elem.c_str());
 }
 
-long long int MyString::find(std::string t2, int index)
+long long int MyString::find(std::string string_elem, int index) const
 {
-	return find((char*)t2.c_str(), index);
+	return find((char*)string_elem.c_str(), index);
 }
 
-MyString::~MyString()
-{
-	leng = 0;
-	delete[] string;
-	string = 0;
-}
-
-void MyString::AddFunc(int length, int add_length, char* str, char* add_str)
+void MyString::AddFunc(const int length, const int add_length, const char* str,const char* add_str)
 {
 	int new_leng = length + add_length;
 	char *newStr = new char[new_leng + 1];
@@ -393,30 +401,30 @@ void MyString::AddFunc(int length, int add_length, char* str, char* add_str)
 	leng = new_leng;
 }
 
-void MyString::AssignFunc(int t_leng, char* t)
+std::ostream& operator<<(std::ostream &out, const MyString& mystring_elem)
 {
-	leng = t_leng;
-	delete[] string;
-	string = new char[leng + 1];
-	strcpy(string, t);
-	string[leng] = '\0';
+	if (mystring_elem.string != nullptr)
+		return (out << mystring_elem.string);
+	else
+		return out << "";
 }
 
-std::ostream& operator<<(std::ostream &out, const MyString& t)
+std::istream & operator>>(std::istream & in, MyString& mystring_elem)
 {
-	out << t.string;
-	return out;
-}
+	const int length = 1000;
+	char tmp[length];
 
-std::istream & operator>>(std::istream & is, MyString & t)
-{
-	char temp[MyString::CINLIM];
-	is.get(temp, MyString::CINLIM);
-	if (is)
-		t = temp;
-	while (is && is.get() != '\n')
+	in.get(tmp, length);
+
+	if (in)
+		mystring_elem = tmp;
+	while (in && in.get() != '\n')
 		continue;
-	return is;
+
+	mystring_elem.leng = strlen(tmp);
+	mystring_elem.capa = mystring_elem.leng + 1;
+
+	return in;
 }
 
 bool operator<(const MyString &t1, const MyString &t2)

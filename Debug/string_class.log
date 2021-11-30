@@ -1,4 +1,5 @@
 ﻿  MyStrting.cpp
+c:\users\eshus\source\repos\string_class\mystrting.cpp(226): warning C4018: <: несоответствие типов со знаком и без знака
   test.cpp
 c:\users\eshus\source\repos\string_class\test.cpp(103): warning C4244: =: преобразование "__int64" в "int", возможна потеря данных
   Создание кода...

@@ -12,7 +12,7 @@ int main()
 	a1+= a2;
 	std::cout << a1 << std::endl;
 
-	a1 + "hello world";
+	a1 = a1 + "hello world";
 	std::cout << a1 << std::endl;
 
 	a2 = (b + a);

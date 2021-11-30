@@ -1,73 +1,81 @@
+#ifndef STRING_CLASS_MYSTRING_H_
+#define STRING_CLASS_MYSTRING_H_
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
 #include <string>
-#pragma once
+
 class MyString{
 	int leng;
+	int capa;
 	char* string;
 public:
 	MyString();
-	MyString(char* a1);
-	MyString(std::string a3);
-	MyString(const char* a4, int leng1);
-	MyString(int leng2, char a5);
-	MyString(const MyString &a6);
+	MyString(const char* char_element);
+	MyString(const std::string string_element);
+	MyString(const char* char_element, const int count);
+	MyString(const int count, const char char_element);
+	MyString(const MyString& mystring_element);
+	~MyString();
 
-	MyString& operator+ (const MyString& t1);  
-	MyString& operator+ (char* t1);
-	MyString& operator+ (std::string t1);
-	MyString& operator += (std::string t);
-	MyString& operator += (char* t);
-	MyString& operator += (const MyString& t);
-	MyString& operator = (char* t);
-	MyString& operator = (std::string t);
-	//MyString& operator = (const MyString& t);
-	char& operator[](int i);
+	MyString operator+ (const MyString& mystring_elem) const;
+	MyString operator+ (const char* char_elem) const;//
+	MyString operator+ (const std::string string_elem) const;//
+	MyString& operator += (const std::string string_element);
+	MyString& operator += (const char* char_element);
+	MyString& operator += (const MyString& mystring_element);
+	MyString& operator = (const char* char_element);
+	MyString& operator = (const char char_element);
+	MyString& operator = (const std::string string_element);
+	MyString& operator = (const MyString& mystring_elem);
+	char& operator[](int index);
 
-	char* c_str();
-	char* data();
-	int size();
-	int length();
-	int empty();
-	int capacity();
+	char* c_str() const;
+	char* data() const;
+	int size() const;
+	int length() const;
+	bool empty() const;
+	int capacity() const;
 	void shrink_to_fit();
 	void clear();
 
-	MyString& insert(int index, int count, char t);
-	MyString& insert(int index, std::string t1);
-	MyString& insert(int index, std::string t2, int count);
+	MyString& insert(int index, char char_elem);
+	MyString& insert(int index, int count, char char_elem);
+	MyString& insert(int index, std::string string_elem);
+	MyString& insert(int index, std::string string_elem, int count);
 
 	MyString& erase(int index, int count);
 
-	MyString& append(int count, char t);
-	MyString& append(char* t1);
-	MyString& append(char* t1, int index, int count);
-	MyString& append(std::string t2);
-	MyString& append(std::string t2, int index, int count);
+	MyString& append(int count, char char_elem);
+	MyString& append(char* char_elem);
+	MyString& append(char* char_elem, int index, int count);
+	MyString& append(std::string string_elem);
+	MyString& append(std::string string_elem, int index, int count);
 
-	MyString& replace(int index, int count, char* t1);
-	MyString& replace(int index, int count, std::string t2);
+	MyString& replace(int index, int count, char* char_elem);
+	MyString& replace(int index, int count, std::string string_elem);
 
-	char* substr(int index);
-	char* substr(int index, int count);
+	char* substr(int index) const;
+	char* substr(int index, int count) const;
 
 	bool equals(const char* str);
 
-	long long int find(const char* t);
-	long long int find(const char* t, int index);
-	long long int find(std::string t2);
-	long long int find(std::string t2, int index);
+	long long int find(const char* char_elem) const;
+	long long int find(const char* char_elem, int index) const;
+	long long int find(std::string string_elem) const;
+	long long int find(std::string string_elem, int index) const;
 
-	friend bool operator<(const MyString &t1, const MyString &t2);
-	friend bool operator>(const MyString &t1, const MyString &t2);
-	friend bool operator<=(const MyString &t1, const MyString &t2);
-	friend bool operator>=(const MyString &t1, const MyString &t2);
-	friend bool operator!=(const MyString &t1, const MyString &t2);
-	friend bool operator==(const MyString &t1, const MyString &t2);
-	friend std::ostream& operator<< (std::ostream &out, const MyString &t);
-	friend std::istream& operator>> (std::istream &out, MyString &t);
+	friend bool operator<(const MyString &mystring_elem1, const MyString &mystring_elem2);
+	friend bool operator>(const MyString &mystring_elem1, const MyString &mystring_elem2);
+	friend bool operator<=(const MyString &mystring_elem1, const MyString &mystring_elem2);
+	friend bool operator>=(const MyString &mystring_elem1, const MyString &mystring_elem2);
+	friend bool operator!=(const MyString &mystring_elem1, const MyString &mystring_elem2);
+	friend bool operator==(const MyString &mystring_elem1, const MyString &mystring_elem2);
+	friend std::ostream& operator<< (std::ostream &out, const MyString &mystring_elem);
+	friend std::istream& operator>> (std::istream &out, MyString &mystring_elem);
 
-	~MyString();
 private:
-	void AddFunc(int length, int add_length, char* str, char* add_str);
-	void AssignFunc(int t_leng, char* t);
-	static const int CINLIM = 80;
+	void AddFunc(const int length, const int add_length, const char* str, const char* add_str);
 };
+
+#endif

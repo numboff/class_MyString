@@ -1,6 +1,7 @@
 ﻿  MyStrting.cpp
-c:\users\eshus\source\repos\string_class\mystrting.cpp(226): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\eshus\source\repos\string_class\mystrting.cpp(237): warning C4018: <: несоответствие типов со знаком и без знака
   test.cpp
 c:\users\eshus\source\repos\string_class\test.cpp(103): warning C4244: =: преобразование "__int64" в "int", возможна потеря данных
+  wrap.cpp
+c:\program files\boost\boost_1_66_0\boost\python\detail\wrap_python.hpp(50): fatal error C1083: Не удается открыть файл включение: pyconfig.h: No such file or directory,
   Создание кода...
-  string_class.vcxproj -> C:\Users\eshus\source\repos\string_class\Debug\string_class.exe

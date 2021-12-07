@@ -76,10 +76,14 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>Python\include; C:\Program Files\boost\boost_1_66_0; Python\libs; C:\Program Files\boost\boost_1_66_0\stage\lib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
     </Link>
+    <PostBuildEvent>
+      <Command>string_class.pyd</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -125,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="MyStrting.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="wrap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyString.h" />

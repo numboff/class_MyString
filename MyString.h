@@ -10,12 +10,15 @@ class MyString{
 	int capa;
 	char* string;
 public:
+	static const int NOT_AN_IDENTIFIER = -1;
+
 	MyString();
 	MyString(const char* char_element);
 	MyString(const std::string string_element);
 	MyString(const char* char_element, const int count);
 	MyString(const int count, const char char_element);
 	MyString(const MyString& mystring_element);
+	MyString(MyString&& mystring_element);
 	~MyString();
 
 	MyString operator+ (const MyString& mystring_elem) const;

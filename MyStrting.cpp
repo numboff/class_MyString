@@ -31,9 +31,20 @@ MyString::MyString(const int count, const char char_element) : leng(count), capa
 	string[leng] = '\0';
 }
 
-MyString::MyString(const MyString &mystring_element) : leng(mystring_element.leng), capa(leng+1), string(mystring_element.string)
+MyString::MyString(const MyString &mystring_element) : leng(mystring_element.leng), capa(leng+1)
 {
+	std::copy(mystring_element.string, mystring_element.string + mystring_element.leng, string);
+}
 
+MyString::MyString(MyString&& mystring_element) : leng(0), capa(leng + 1), string(nullptr)
+{
+	leng = mystring_element.leng;
+	capa = mystring_element.capa;
+	string = mystring_element.string;
+
+	mystring_element.leng = 0;
+	mystring_element.capa = leng + 1;
+	mystring_element.string = nullptr;
 }
 
 MyString::~MyString()
